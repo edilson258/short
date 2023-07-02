@@ -77,6 +77,9 @@ export function ShortURLOutput() {
           className="relative flex justify-center mt-4 shadow border p-2 rounded"
         >
           <QRCode
+            size={128}
+            bgColor="#000000"
+            fgColor="#FFFFFF"
             value={qrCodeContext?.shortURL || ""}
             onClick={downloadQRCodeAsPNG}
           />
