@@ -2,7 +2,7 @@ import { QRCodeContext } from "@/contexts/QRCodeContext";
 import { useRef, useState, useEffect, useContext } from "react";
 import QRCode from "react-qr-code";
 import { IoIosCopy } from "react-icons/io";
-import { usePathname } from "next/navigation";
+import { IoMdDownload } from "react-icons/io";
 
 export function ShortURLOutput() {
   const qrCodeContext = useContext(QRCodeContext);
@@ -74,12 +74,15 @@ export function ShortURLOutput() {
       {qrCodeContext?.canGenerateQRCode && (
         <div
           ref={QRCodeWrapRef}
-          className="flex justify-center mt-4 shadow border p-2 rounded"
+          className="relative flex justify-center mt-4 shadow border p-2 rounded"
         >
           <QRCode
             value={qrCodeContext?.shortURL || ""}
             onClick={downloadQRCodeAsPNG}
           />
+          <div className="absolute top-0 right-0 rounded-tr p-1 bg-sky-500">
+          <IoMdDownload onClick={downloadQRCodeAsPNG} role="Download QR Code as PNG image" className="text-white w-5 h-5" />
+          </div>
         </div>
       )}
     </div>
