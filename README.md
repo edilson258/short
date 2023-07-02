@@ -5,6 +5,10 @@ This is a Short URL App built using Next.js. The app allows users to create shor
 ## Demo
 [Demo](https://b-edilson258.vercel.app/)
 
+## Screenshots
+![Desktop view](https://github.com/edilson258/short/blob/main/screenshots/Screenshot_20230702-112145.png)
+![Mobile view](https://github.com/edilson258/short/blob/main/screenshots/Screenshot_20230702-112121.png)
+
 ## Features
 
 - URL shortening: Users can enter a long web address and generate a shortened URL.
