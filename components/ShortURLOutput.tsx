@@ -4,6 +4,13 @@ import QRCode from "react-qr-code";
 import { IoIosCopy } from "react-icons/io";
 import { IoMdDownload } from "react-icons/io";
 
+/*
+ * TODO:
+ *     ::
+ *
+ *
+ */
+
 export function ShortURLOutput() {
   const qrCodeContext = useContext(QRCodeContext);
 
@@ -77,13 +84,12 @@ export function ShortURLOutput() {
           className="relative flex justify-center mt-4 shadow border p-2 rounded"
         >
           <QRCode
-            size={128}
             bgColor="#000000"
             fgColor="#FFFFFF"
             value={qrCodeContext?.shortURL || ""}
             onClick={downloadQRCodeAsPNG}
           />
-          <div className="absolute top-0 right-0 rounded-tr p-1 bg-sky-500">
+          <div className="absolute shadow-lg top-0 right-0 rounded-tr p-1 bg-sky-500">
           <IoMdDownload onClick={downloadQRCodeAsPNG} role="Download QR Code as PNG image" className="text-white w-5 h-5" />
           </div>
         </div>

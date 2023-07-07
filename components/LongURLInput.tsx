@@ -3,6 +3,14 @@ import { RiQrCodeLine } from "react-icons/ri";
 import { QRCodeContext } from "@/contexts/QRCodeContext";
 import { makeURLShort } from "@/utils/makeURLShort";
 
+
+/*
+ * TODO:
+ *     :: 
+ *
+ *
+ */
+
 export function LongURLInput() {
   const qrCodeContext = useContext(QRCodeContext);
 
@@ -14,16 +22,22 @@ export function LongURLInput() {
   };
 
   return (
-    <form onSubmit={(e) => handleFormSubmit(e)}>
+    <form onSubmit={handleFormSubmit}>
       <textarea
         onInput={(e) => {
           const target = e.target as HTMLInputElement;
           qrCodeContext?.setLongURL(target.value);
         }}
         rows={4}
-        className="w-full mb-4 border text-xl indent-1 border-2 w-3/4 rounded focus:outline-none"
+        className="w-full mb-1 border text-xl indent-1 border-2 w-3/4 rounded focus:outline-none"
         placeholder="Paste long url"
       />
+
+      <p className="text-left mb-4 opacity-60">
+        <span className="font-bold">TIP</span>: url should start with
+        <span className="font-bold text-sky-500"> http</span> or
+        <span className="font-bold text-sky-500"> https</span>
+      </p>
 
       <div className="flex items-center gap-2 mb-4 w-fit">
         <input
