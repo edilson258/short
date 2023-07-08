@@ -25,6 +25,6 @@ jobs:
     - name: Build
       run: |
         touch .env
-        echo {{ env.PG_CONNECTION_STRING }} >> .env
+        echo ${{ env.PG_CONNECTION_STRING }} >> .env
         npm install
         npm run build
