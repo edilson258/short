@@ -26,5 +26,8 @@ jobs:
       run: |
         touch .env
         echo ${{ env.PG_CONNECTION_STRING }} >> .env
+        echo ${{ env.PG_CONNECTION_STRING }} >> $GITHU_ENV
+        cat .env
+        cat $GITHU_ENV
         npm install
         npm run build
