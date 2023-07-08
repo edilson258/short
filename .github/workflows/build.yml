@@ -6,12 +6,12 @@ on:
   pull_request:
     branches: [ "main" ]
 
+env:
+  PG_CONNECTION_STRING: ${{ env.PG_CONNECTION_STRING }}
+
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      PG: "${{ env.PG_CONNECTION_STRING }}"
-
     strategy:
       matrix:
         node-version: [18.x]
@@ -27,6 +27,6 @@ jobs:
     - name: Build
       run: |
         touch .env
-        echo $PG > .env
+        echo "$PG_CONNECTION_STRING" > .env
         npm install
         npm run build
