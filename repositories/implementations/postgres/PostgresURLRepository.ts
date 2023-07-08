@@ -1,54 +1,47 @@
 import {IURLRepository} from "@/repositories/URLRepository";
 import {TURLData} from "@/types/URLData";
-import {DataTypes, Model, Sequelize} from "sequelize";
-
-interface IURLDataInstace extends Model<TURLData>, TURLData {}
+import {Pool} from "pg";
 
 export class PostgresURLRepository implements IURLRepository {
-  private postgresClient: Sequelize;
-  private URLTableName = "URLTable";
+  private postgresClient: Pool;
 
-  constructor(postgresClient: Sequelize) {
+  constructor(postgresClient: Pool) {
     this.postgresClient = postgresClient;
     this.createTables();
   }
 
   private createTables = async () => {
-    this.postgresClient.define<IURLDataInstace>(this.URLTableName, {
-      _id: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
-      longURL: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
-      longURLHash: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
-    });
+    await this.postgresClient.query(`
+      CREATE TABLE IF NOT EXISTS urls (
+        _id VARCHAR(256),
+        longurl TEXT,
+        longurlhash VARCHAR(256)
+      );
+    `);
   };
 
-  private getURLTable() {
-    // casting URLTable to get fields suggestions
-    const URLTable = this.postgresClient.models.URLTable as typeof Model & {
-      new (): IURLDataInstace;
-    };
-    return URLTable;
-  }
-
   public storeURL = async (urlData: TURLData): Promise<void> => {
-    await this.postgresClient.sync();
-    await this.getURLTable().create({
-      ...urlData,
-    });
+    const queryText = `
+      INSERT INTO urls (_id, longurl, longurlhash)
+      VALUES ('${urlData._id}', '${urlData.longURL}', '${urlData.longURLHash}');
+    `;
+    await this.postgresClient.query(queryText);
   };
 
   public queryURLByHash = async (
     longURLHash: string
   ): Promise<TURLData | null> => {
-    await this.postgresClient.sync();
-    return await this.getURLTable().findOne({ where: { longURLHash } });
+    const queryText = `
+      SELECT * FROM urls WHERE longurlhash = '${longURLHash}' LIMIT 1;
+    `;
+    const result = await this.postgresClient.query(queryText);
+    if (result.rowCount < 1) return null;
+    const row = result.rows[0];
+    const url: TURLData = {
+      _id: row._id,
+      longURL: row.longurl,
+      longURLHash: row.longurlhash,
+    };
+    return url;
   };
 }

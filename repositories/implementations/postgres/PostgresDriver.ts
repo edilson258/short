@@ -1,21 +1,22 @@
-import * as pg from "pg";
-import {Sequelize} from "sequelize";
+import {Pool} from "pg";
 
 export class PostgresDriver {
-  private postgresClient: Sequelize;
+  private postgresClient: Pool;
+  private poolMaxConnections = 5;
 
   constructor(connectionString: string) {
-    this.postgresClient = new Sequelize(connectionString, {
-      dialectModule: pg
-    });
+    this.postgresClient = new  Pool({
+      connectionString: connectionString,
+      max: this.poolMaxConnections
+    })
   }
 
   public async connect() {
-    await this.postgresClient.authenticate();
+    await this.postgresClient.connect()
   }
 
   public async close() {
-    await this.postgresClient.close();
+    await this.postgresClient.end();
   }
 
   public getPostgresClient() {
