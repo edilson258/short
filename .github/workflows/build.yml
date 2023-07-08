@@ -7,7 +7,7 @@ on:
     branches: [ "main" ]
 
 env:
-  PG_CONNECTION_STRING: "${{ env.PG_CONNECTION_STRING }}"
+  PG_CONNECTION_STRING: "${{ vars.PG_CONNECTION_STRING }}"
 
 jobs:
   build:
