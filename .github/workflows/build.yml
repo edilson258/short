@@ -9,6 +9,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      PG_CONNECTION_STRING: ${{ env.PG_CONNECTION_STRING }}
 
     strategy:
       matrix:
@@ -25,9 +27,6 @@ jobs:
     - name: Build
       run: |
         touch .env
-        echo ${{ env.PG_CONNECTION_STRING }} >> .env
-        echo ${{ env.PG_CONNECTION_STRING }} >> $GITHU_ENV
-        cat .env
-        cat $GITHU_ENV
+        echo $PG_CONNECTION_STRING > .env
         npm install
         npm run build
