@@ -24,7 +24,6 @@ jobs:
 
     - name: Build
       run: |
-        echo "PG_CONNECTION_STRING=$PG_CONNECTION_STRING" >> $GITHUB_ENV
-        echo $GITHUB_ENV
+        echo "PG_CONNECTION_STRING=${{ env.PG_CONNECTION_STRING }}" >> $GITHUB_ENV
         npm install
         npm run build
