@@ -10,7 +10,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      PG_CONNECTION_STRING: ${{ env.PG_CONNECTION_STRING }}
+      PG: ${{ env.PG_CONNECTION_STRING }}
 
     strategy:
       matrix:
@@ -27,6 +27,6 @@ jobs:
     - name: Build
       run: |
         touch .env
-        echo $PG_CONNECTION_STRING > .env
+        echo $PG > .env
         npm install
         npm run build
