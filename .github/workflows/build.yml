@@ -24,7 +24,6 @@ jobs:
 
     - name: Build
       run: |
-        touch .env
-        echo PG_CONN_STR=$PG_CONNECTION_STRING >> .env
+        echo "PG_CONNECTION_STRING=${{ secrets.PG_CONNECTION_STRING }}" >> $GITHUB_ENV
         npm install
         npm run build
