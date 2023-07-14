@@ -7,7 +7,11 @@ export class PostgresURLRepository implements IURLRepository {
 
   constructor(postgresClient: Pool) {
     this.postgresClient = postgresClient;
-    this.createTables();
+    this.sync()
+  }
+
+  private sync = async () => {
+    await this.createTables()
   }
 
   private createTables = async () => {
@@ -21,6 +25,7 @@ export class PostgresURLRepository implements IURLRepository {
   };
 
   public storeURL = async (urlData: TURLData): Promise<void> => {
+    await this.sync()
     const queryText = `
       INSERT INTO urls (_id, longurl, longurlhash)
       VALUES ('${urlData._id}', '${urlData.longURL}', '${urlData.longURLHash}');
@@ -31,6 +36,7 @@ export class PostgresURLRepository implements IURLRepository {
   public queryURLByHash = async (
     longURLHash: string
   ): Promise<TURLData | null> => {
+    await this.sync()
     const queryText = `
       SELECT * FROM urls WHERE longurlhash = '${longURLHash}' LIMIT 1;
     `;
