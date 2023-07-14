@@ -1,18 +1,18 @@
 "use client";
-import {LongURLInput} from "@/components/LongURLInput";
-import {ShortURLOutput} from "@/components/ShortURLOutput";
-import {QRCodeContext} from "@/contexts/QRCodeContext";
-import {TURLData} from "@/types/URLData";
-import {makeURLShort} from "@/utils/makeURLShort";
-import {storeURLRequestVaidator} from "@/validators/storeURLRequestValidator";
+import { LongURLInput } from "@/components/long-url-input";
+import { ShortURLOutput } from "@/components/short-url-output";
+import { URLContext } from "@/contexts/URLContext";
+import { TURLData } from "@/types/URLData";
+import { makeURLShort } from "@/utils/makeURLShort";
+import { storeURLRequestVaidator } from "@/validators/storeURLRequestValidator";
 import axios from "axios";
-import {Dispatch, SetStateAction, useEffect, useState} from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import z from "zod";
-
+import LoadingPlaceholder from "react-placeholder-loading";
 
 /*
  * TODO:
- *     :: peesonlize errors to make them.more infomarive
+ *     :: personlize errors to make them.more infomarive
  *     :: show error to user according to what happened wrong
  *
  */
@@ -69,7 +69,7 @@ export default function Home() {
   }, [shortURL]);
 
   return (
-    <QRCodeContext.Provider
+    <URLContext.Provider
       value={{
         shortURL,
         setShortURL,
@@ -79,19 +79,48 @@ export default function Home() {
         setCanGenerateQRCode,
       }}
     >
-      <main className="text-center max-w-screen-sm container mx-auto mt-12 py-8 px-4">
-        <h1 className="mb-8 text-3xl font-bold text-sky-500">URL Shorter</h1>
+      <main className="m-auto min-h-screen pt-[18%] mg:pt-[30%] pb-16 max-w-xs md:max-w-sm text-slate-500">
+        <h1 className="mb-12 text-slate-700 text-3xl text-center font-bold">
+          Make it shorter
+        </h1>
         <LongURLInput />
         {storeURLRequestState === storeURLRequestStates.DONE && (
           <ShortURLOutput />
         )}
         {storeURLRequestState === storeURLRequestStates.STORING && (
-          <h1>STORING</h1>
+          <>
+            <div className="shadow w-full mt-8 rounded overflow-hidden">
+            <LoadingPlaceholder
+              colorStart="white"
+              colorEnd="#f1f5f9"
+              width="100%"
+              height="40px"
+              shape="rect"
+            />
+            </div>
+            {canGenerateQRCode && (
+              <div className="shadow w-full mt-4 rounded overflow-hidden">
+                <LoadingPlaceholder
+                  colorStart="white"
+                  colorEnd="#f1f5f9"
+                  width="100%"
+                  height="256px"
+                  shape="rect"
+                />
+              </div>
+            )}
+          </>
         )}
         {storeURLRequestState === storeURLRequestStates.ERROR && (
-          <h1 className="mt-4 text-red-500">Failed to store short URL</h1>
+          <div className="w-full text-center text-red-600 mt-8 rounded shadow p-2">
+            <p className="mb-2">Internal Server Error</p>
+            <p className="text-xs">
+              Please try again or contact the website owner if this problem
+              persists.{" "}
+            </p>
+          </div>
         )}
       </main>
-    </QRCodeContext.Provider>
+    </URLContext.Provider>
   );
 }

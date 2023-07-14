@@ -1,5 +1,5 @@
-import { QRCodeContext } from "@/contexts/QRCodeContext";
-import { useRef, useState, useEffect, useContext } from "react";
+import { URLContext } from "@/contexts/URLContext";
+import { useRef, useState, useContext } from "react";
 import QRCode from "react-qr-code";
 import { IoIosCopy } from "react-icons/io";
 import { IoMdDownload } from "react-icons/io";
@@ -12,7 +12,7 @@ import { IoMdDownload } from "react-icons/io";
  */
 
 export function ShortURLOutput() {
-  const qrCodeContext = useContext(QRCodeContext);
+  const urlContext = useContext(URLContext);
 
   const [isURLCopied, setIsURLCopied] = useState(false);
   const QRCodeWrapRef = useRef<HTMLDivElement>(null);
@@ -50,27 +50,23 @@ export function ShortURLOutput() {
   };
 
   const copyToClipBoard = () => {
-    qrCodeContext?.shortURL &&
-      navigator.clipboard.writeText(qrCodeContext?.shortURL);
+    urlContext?.shortURL &&
+      navigator.clipboard.writeText(urlContext?.shortURL);
     setIsURLCopied(true);
+
+    // Tell the user that URL was copied and after for 3 seconds
+    setTimeout(() => {
+      setIsURLCopied(false)
+    }, 3000)
   };
 
-  useEffect(() => {
-    (async () => {
-      const clipboardText = await navigator.clipboard.readText();
-      if (clipboardText === qrCodeContext?.shortURL) {
-        setIsURLCopied(true);
-      } else {
-        setIsURLCopied(false);
-      }
-    })();
-  }, [qrCodeContext?.shortURL]);
+  
 
   return (
     <div className="mt-8">
-      <div className="shadow p-2 rounded flex justify-between items-center">
-        <span className="">{qrCodeContext?.shortURL}</span>
-        <span className="text-sky-500">
+      <div className="text-slate-700 shadow p-2 rounded flex justify-between items-center">
+        <span>{urlContext?.shortURL}</span>
+        <span>
           {isURLCopied ? (
             "copied"
           ) : (
@@ -78,7 +74,7 @@ export function ShortURLOutput() {
           )}
         </span>
       </div>
-      {qrCodeContext?.canGenerateQRCode && (
+      {urlContext?.canGenerateQRCode && (
         <div
           ref={QRCodeWrapRef}
           className="relative flex justify-center mt-4 shadow border p-2 rounded"
@@ -86,10 +82,10 @@ export function ShortURLOutput() {
           <QRCode
             bgColor="#000000"
             fgColor="#FFFFFF"
-            value={qrCodeContext?.shortURL || ""}
+            value={urlContext?.shortURL || ""}
             onClick={downloadQRCodeAsPNG}
           />
-          <div className="absolute shadow-lg top-0 right-0 rounded-tr p-1 bg-sky-500">
+          <div className="absolute shadow-lg top-0 right-0 rounded-tr p-1 bg-slate-700">
           <IoMdDownload onClick={downloadQRCodeAsPNG} role="Download QR Code as PNG image" className="text-white w-5 h-5" />
           </div>
         </div>

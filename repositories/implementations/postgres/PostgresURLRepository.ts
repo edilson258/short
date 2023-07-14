@@ -1,18 +1,18 @@
-import {IURLRepository} from "@/repositories/URLRepository";
-import {TURLData} from "@/types/URLData";
-import {Pool} from "pg";
+import { IURLRepository } from "@/repositories/URLRepository";
+import { TURLData } from "@/types/URLData";
+import { Pool } from "pg";
 
 export class PostgresURLRepository implements IURLRepository {
   private postgresClient: Pool;
 
   constructor(postgresClient: Pool) {
     this.postgresClient = postgresClient;
-    this.sync()
+    this.sync();
   }
 
   private sync = async () => {
-    await this.createTables()
-  }
+    await this.createTables();
+  };
 
   private createTables = async () => {
     await this.postgresClient.query(`
@@ -25,7 +25,7 @@ export class PostgresURLRepository implements IURLRepository {
   };
 
   public storeURL = async (urlData: TURLData): Promise<void> => {
-    await this.sync()
+    await this.sync();
     const queryText = `
       INSERT INTO urls (_id, longurl, longurlhash)
       VALUES ('${urlData._id}', '${urlData.longURL}', '${urlData.longURLHash}');
@@ -36,7 +36,7 @@ export class PostgresURLRepository implements IURLRepository {
   public queryURLByHash = async (
     longURLHash: string
   ): Promise<TURLData | null> => {
-    await this.sync()
+    await this.sync();
     const queryText = `
       SELECT * FROM urls WHERE longurlhash = '${longURLHash}' LIMIT 1;
     `;

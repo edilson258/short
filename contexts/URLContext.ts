@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction, createContext } from "react";
 
-interface IQRCodeContext {
+interface IURLContext {
   canGenerateQRCode: boolean;
   setCanGenerateQRCode: Dispatch<SetStateAction<boolean>>;
   longURL: string;
@@ -9,4 +9,4 @@ interface IQRCodeContext {
   setShortURL: Dispatch<SetStateAction<string | null>>;
 }
 
-export const QRCodeContext = createContext<IQRCodeContext | null>(null);
+export const URLContext = createContext<IURLContext | null>(null);
