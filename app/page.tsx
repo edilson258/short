@@ -9,6 +9,7 @@ import axios from "axios";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import z from "zod";
 import LoadingPlaceholder from "react-placeholder-loading";
+import { useSession } from "next-auth/react";
 
 /*
  * TODO:
@@ -68,6 +69,8 @@ export default function Home() {
     storeURL({ url, setStoreURLRequestState });
   }, [shortURL]);
 
+  const { data: session } = useSession()
+  
   return (
     <URLContext.Provider
       value={{
@@ -83,6 +86,7 @@ export default function Home() {
         <h1 className="mb-12 text-slate-700 text-3xl text-center font-bold drop-shadow-xl">
           Make it shorter
         </h1>
+        <p>{ JSON.stringify(session, null, 2) }</p>
         <LongURLInput />
         {storeURLRequestState === storeURLRequestStates.DONE && (
           <ShortURLOutput />

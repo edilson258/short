@@ -1,11 +1,16 @@
-import bcryptjs from "bcryptjs"
+import bcryptjs from "bcryptjs";
 
-export function hashPassword(plainPassowrd: string) {
-  const salt = bcryptjs.genSaltSync(16)
-  const hashedPassword = bcryptjs.hashSync(plainPassowrd, salt)
-  return hashedPassword
+export async function hashPassword(plainPassowrd: string): Promise<string> {
+  const salt = await bcryptjs.genSalt(16);
+  const hashedPassword = await bcryptjs.hash(plainPassowrd, salt);
+  return hashedPassword;
 }
 
-export function isPasswordEqual(plainPassowrd: string, hashedPassword: string) {
-  return bcryptjs.compareSync(plainPassowrd, hashedPassword)
+export async function isPasswordEqual(
+  plainPassowrd: string,
+  hashedPassword: string,
+): Promise<boolean> {
+  const result = await bcryptjs.compare(plainPassowrd, hashedPassword);
+  console.log("\n\n", result, "\n\n")
+  return result
 }

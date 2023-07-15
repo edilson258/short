@@ -1,37 +1,51 @@
 "use client";
 import * as z from "zod";
-import axios from "axios";
+import { signIn } from "next-auth/react";
 import { FcGoogle } from "react-icons/fc";
 import { CgSpinner } from "react-icons/cg";
 import { FormEvent, useRef, useState } from "react";
 import { storeUserRequestVaidator } from "@/lib/validators/storeUserRequestValidator";
+import { useRouter } from "next/navigation";
 
-enum possibleSaveUserStatus {
+enum registerStates {
   IDLE,
-  SAVING,
+  CREATING,
+  SIGNING,
+  ERROR_CREATING_USER,
+  ERROR_SIGNING_USER,
   DONE,
-  ERROR,
 }
 
 export default function RegisterPage() {
+  const router = useRouter();
+
+  // Form Data
   const usernameRef = useRef<HTMLInputElement>(null);
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
 
   const [isInvalidFormData, setIsInvalidFormData] = useState(false);
 
-  const [saveUserStatus, setSaveUserStatus] = useState<possibleSaveUserStatus>(
-    possibleSaveUserStatus.IDLE
+  const [registerState, setResgisterState] = useState<registerStates>(
+    registerStates.IDLE,
   );
   const [errorMessage, setErrorMessage] = useState("");
 
-  const isSavingUser = saveUserStatus === possibleSaveUserStatus.SAVING;
-  const isSavingUserError = saveUserStatus === possibleSaveUserStatus.ERROR;
+  // Progress status and error handling
+  const isCreatingUser = registerState === registerStates.CREATING;
+  const isCreatingUserError =
+    registerState === registerStates.ERROR_CREATING_USER;
+  const isSigningUser = registerState === registerStates.SIGNING;
+  const isSigningUserError =
+    registerState === registerStates.ERROR_SIGNING_USER;
+  const isRegistrationIDLE = registerState === registerStates.IDLE;
+  const isRegistrationDone = registerState === registerStates.DONE;
 
   const onFormSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    router.prefetch("/");
 
-    setSaveUserStatus(possibleSaveUserStatus.SAVING);
+    setResgisterState(registerStates.CREATING);
 
     const username = usernameRef.current?.value;
     const email = emailRef.current?.value;
@@ -56,26 +70,43 @@ export default function RegisterPage() {
 
     switch (response.status) {
       case 201:
-        setSaveUserStatus(possibleSaveUserStatus.DONE);
-        return
+        setResgisterState(registerStates.SIGNING);
+        handleSignin(email, password);
+        return;
       case 409:
-        setSaveUserStatus(possibleSaveUserStatus.ERROR);
+        setResgisterState(registerStates.ERROR_CREATING_USER);
         setErrorMessage("Email address already exists, try a different one.");
-        return
+        return;
       case 422:
-        setSaveUserStatus(possibleSaveUserStatus.ERROR);
+        setResgisterState(registerStates.ERROR_CREATING_USER);
         setErrorMessage("Invalid user data.");
-        return
+        return;
       case 500:
-        setSaveUserStatus(possibleSaveUserStatus.ERROR);
+        setResgisterState(registerStates.ERROR_CREATING_USER);
         setErrorMessage(
-          "Internal Sever Error, please try agian. If this error persists contact the website owner"
+          "Internal Sever Error, please try agian. If this error persists contact the website owner",
         );
-        return
+        return;
       default:
-        setSaveUserStatus(possibleSaveUserStatus.ERROR);
+        setResgisterState(registerStates.ERROR_CREATING_USER);
         setErrorMessage("Unknown error");
-        return
+        return;
+    }
+  };
+
+  const handleSignin = async (email: string, password: string) => {
+    const signInResult = await signIn("credentials", {
+      email,
+      password,
+      redirect: false,
+    });
+
+    if (!signInResult?.error) {
+      router.replace("/");
+      setResgisterState(registerStates.DONE);
+    } else {
+      setResgisterState(registerStates.ERROR_SIGNING_USER);
+      setErrorMessage("Failed to signIn, try again manually");
     }
   };
 
@@ -84,7 +115,7 @@ export default function RegisterPage() {
       <h1 className="text-3xl text-slate-700 font-bold">Welcome</h1>
       <p className="mt-2">Fill the form bellow to create an account</p>
 
-      {isSavingUserError && (
+      {(isCreatingUserError || isSigningUserError) && (
         <div className="bg-red-500 text-white mt-4 rounded p-2">
           <h1 className="text-lg">Some error occured</h1>
           <p className="text-sm">{errorMessage}</p>
@@ -153,22 +184,32 @@ export default function RegisterPage() {
         </div>
 
         <button
-          disabled={isSavingUser}
+          disabled={isCreatingUser || isSigningUser || isRegistrationDone}
           type="submit"
           className={
-            isSavingUser
+            isCreatingUser || isSigningUser || isRegistrationDone
               ? "disabled:opacity-75 font-bold mt-8 w-full bg-slate-700 p-2 rounded text-white"
               : "disabled:opacity-75 font-bold mt-8 w-full bg-slate-700 p-2 rounded text-white"
           }
         >
-          {isSavingUser ? (
+          {isCreatingUser && (
             <div className="flex items-center justify-center gap-2">
               <CgSpinner className="w-5 h-auto animate-spin" />
-              <span>Register</span>
+              <span>Creating account...</span>
             </div>
-          ) : (
-            <span>Register</span>
           )}
+
+          {isSigningUser && (
+            <div className="flex items-center justify-center gap-2">
+              <CgSpinner className="w-5 h-auto animate-spin" />
+              <span>Signing into account...</span>
+            </div>
+          )}
+
+          {(isRegistrationIDLE ||
+            isCreatingUserError ||
+            isSigningUserError) && <span>Register</span>}
+          {isRegistrationDone && <span>Redirecting...</span>}
         </button>
       </form>
 
