@@ -4,7 +4,7 @@ import { ShortURLOutput } from "@/components/short-url-output";
 import { URLContext } from "@/contexts/URLContext";
 import { TURLData } from "@/types/URLData";
 import { makeURLShort } from "@/utils/makeURLShort";
-import { storeURLRequestVaidator } from "@/validators/storeURLRequestValidator";
+import { storeURLRequestVaidator } from "@/lib/validators/storeURLRequestValidator";
 import axios from "axios";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import z from "zod";
@@ -80,7 +80,7 @@ export default function Home() {
       }}
     >
       <main className="m-auto min-h-screen pt-[18%] mg:pt-[30%] pb-16 max-w-xs md:max-w-sm text-slate-500">
-        <h1 className="mb-12 text-slate-700 text-3xl text-center font-bold">
+        <h1 className="mb-12 text-slate-700 text-3xl text-center font-bold drop-shadow-xl">
           Make it shorter
         </h1>
         <LongURLInput />

@@ -1,26 +1,33 @@
-import {postgresURLRepository} from "@/repositories/implementations/postgres";
-import {TURLData} from "@/types/URLData";
-import {storeURLRequestVaidator} from "@/validators/storeURLRequestValidator";
-import {randomUUID} from "crypto";
-import {NextRequest} from "next/server";
+import { postgresURLRepository } from "@/repositories/implementations/postgres/url-repository";
+import { TURLData } from "@/types/URLData";
+import { storeURLRequestVaidator } from "@/lib/validators/storeURLRequestValidator";
+import { randomUUID } from "crypto";
+import { NextRequest } from "next/server";
 
 export async function POST(request: NextRequest) {
   const body = await request.json();
 
-  try { // try to parse data received from client
-    const { longURL, longURLHash } = storeURLRequestVaidator.parse(body);
+  let longURL, longURLHash;
+
+  try {
+    const parsedBody  = storeURLRequestVaidator.parse(body);
+    longURL = parsedBody.longURL
+    longURLHash = parsedBody.longURLHash
+  } catch(err) {
+    console.error("ERROR: Failed to parse url data:", err)
+    return new Response(null, { status: 422 });
+  }
+
+  try {
     const url: TURLData = {
-      _id: randomUUID(), 
+      _id: randomUUID(),
       longURL,
       longURLHash,
     };
-    try { // try to store url to database
-      await postgresURLRepository.storeURL(url);
-    } catch (err) {
-      return new Response(null, { status: 500 });
-    }
+    await postgresURLRepository.storeURL(url);
     return new Response(null, { status: 200 });
-  } catch (err) {
-    return new Response(null, { status: 422 });
+  } catch(err) {
+    console.error("ERROR: Failed to save url:", err)
+    return new Response(null, { status: 500 });
   }
 }

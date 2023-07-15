@@ -1,5 +1,5 @@
-import {postgresURLRepository} from "@/repositories/implementations/postgres";
-import {redirect} from "next/navigation";
+import { postgresURLRepository } from "@/repositories/implementations/postgres/url-repository";
+import { redirect } from "next/navigation";
 
 interface IRedirectToLongURLProps {
   params: {
@@ -12,6 +12,6 @@ export default async function RedirectToLongURL({
 }: IRedirectToLongURLProps) {
   const urlHash = params.urlHash;
   const url = await postgresURLRepository.queryURLByHash(urlHash);
-  if (!url) return <h1>URL `{urlHash}` Not found!</h1>
-  redirect(url.longURL)
+  if (!url) return <h1>URL `{urlHash}` Not found!</h1>;
+  redirect(url.longURL);
 }

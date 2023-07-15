@@ -1,5 +1,5 @@
-import {PostgresDriver} from "./PostgresDriver";
-import {PostgresURLRepository} from "./PostgresURLRepository";
+import { PostgresDriver } from "../PostgresDriver";
+import { PostgresURLRepository } from "./PostgresURLRepository";
 
 const PG_CONNECTION_STRING = process.env.PG_CONNECTION_STRING;
 if (!PG_CONNECTION_STRING)
@@ -7,17 +7,8 @@ if (!PG_CONNECTION_STRING)
 
 const postgresDriver = new PostgresDriver(PG_CONNECTION_STRING);
 
-(async () => {
-  try {
-    await postgresDriver.connect().catch((err) => console.error(err));
-  } catch (err) {
-    console.error(err);
-  }
-})();
-
 const postgresURLRepository = new PostgresURLRepository(
   postgresDriver.getPostgresClient()
 );
 
-export {postgresURLRepository};
-
+export { postgresURLRepository };
