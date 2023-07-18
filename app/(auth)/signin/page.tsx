@@ -1,24 +1,17 @@
 "use client";
 import { signIn } from "next-auth/react";
-import { CgSpinner } from "react-icons/cg";
-import { FormEvent, useRef, useState } from "react";
 import { FcGoogle } from "react-icons/fc";
+import { CgSpinner } from "react-icons/cg";
 import { useRouter } from "next/navigation";
+import { FormEvent, useRef, useState } from "react";
 
-enum signinStates {
-  IDLE,
-  SIGNING,
-  DONE,
-  ERROR,
-}
+type signinStates = "IDLE" | "SIGNING" | "ERROR" | "DONE";
 
 export default function SigninPage() {
   const router = useRouter();
 
   const [isvalidFormData, setIsValidFormData] = useState(true);
-  const [signinState, setSigninState] = useState<signinStates>(
-    signinStates.IDLE,
-  );
+  const [signinState, setSigninState] = useState<signinStates>("IDLE");
 
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
@@ -26,7 +19,7 @@ export default function SigninPage() {
   const onFormSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
-    setSigninState(signinStates.SIGNING);
+    setSigninState("SIGNING");
 
     const email = emailRef.current?.value;
     const password = passwordRef.current?.value;
@@ -42,16 +35,16 @@ export default function SigninPage() {
       redirect: false,
     });
 
-    if(!signInResult) {
-      setSigninState(signinStates.ERROR);
-      return
+    if (!signInResult) {
+      setSigninState("ERROR");
+      return;
     }
 
     if (!signInResult.error) {
       router.replace("/");
-      setSigninState(signinStates.DONE);
+      setSigninState("DONE");
     } else {
-      setSigninState(signinStates.ERROR);
+      setSigninState("ERROR");
     }
   };
 
@@ -60,7 +53,7 @@ export default function SigninPage() {
       <h1 className="text-3xl text-slate-700 font-bold">Welcome back</h1>
       <p className="mt-2">Fill the form bellow to sign in your account</p>
 
-      {signinState === signinStates.ERROR && (
+      {signinState === "ERROR" && (
         <div className="bg-red-500 text-white mt-4 rounded p-2">
           <h1 className="text-lg">Some error occured</h1>
           <p className="text-sm">Verify your credentials and try again</p>
@@ -114,21 +107,20 @@ export default function SigninPage() {
         </div>
 
         <button
-          disabled={
-            signinState === signinStates.SIGNING ||
-            signinState === signinStates.DONE
-          }
+          disabled={signinState === "SIGNING" || signinState === "DONE"}
           type="submit"
           className="disabled:opacity-75 font-bold my-8 w-full bg-slate-700 p-2 rounded text-white"
         >
-          {signinState === signinStates.SIGNING && (
+          {signinState === "SIGNING" && (
             <div className="flex items-center justify-center gap-2">
               <CgSpinner className="w-5 h-auto animate-spin" />
               <span>Signing...</span>
             </div>
           )}
-          {(signinState === signinStates.IDLE || signinState === signinStates.ERROR) && <span>Sign In</span>}
-          {signinState === signinStates.DONE && <span>Redirecting...</span>}
+          {(signinState === "IDLE" || signinState === "ERROR") && (
+            <span>Sign In</span>
+          )}
+          {signinState === "DONE" && <span>Redirecting...</span>}
         </button>
 
         <div className="relative">

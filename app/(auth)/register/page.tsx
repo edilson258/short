@@ -7,14 +7,13 @@ import { FormEvent, useRef, useState } from "react";
 import { storeUserRequestVaidator } from "@/lib/validators/storeUserRequestValidator";
 import { useRouter } from "next/navigation";
 
-enum registerStates {
-  IDLE,
-  CREATING,
-  SIGNING,
-  ERROR_CREATING_USER,
-  ERROR_SIGNING_USER,
-  DONE,
-}
+type registerStates =
+  | "IDLE"
+  | "CREATING"
+  | "SIGNING"
+  | "ERROR_CREATING_USER"
+  | "ERROR_SIGNING_USER"
+  | "DONE";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -26,26 +25,22 @@ export default function RegisterPage() {
 
   const [isInvalidFormData, setIsInvalidFormData] = useState(false);
 
-  const [registerState, setResgisterState] = useState<registerStates>(
-    registerStates.IDLE,
-  );
+  const [registerState, setResgisterState] = useState<registerStates>("IDLE");
   const [errorMessage, setErrorMessage] = useState("");
 
   // Progress status and error handling
-  const isCreatingUser = registerState === registerStates.CREATING;
-  const isCreatingUserError =
-    registerState === registerStates.ERROR_CREATING_USER;
-  const isSigningUser = registerState === registerStates.SIGNING;
-  const isSigningUserError =
-    registerState === registerStates.ERROR_SIGNING_USER;
-  const isRegistrationIDLE = registerState === registerStates.IDLE;
-  const isRegistrationDone = registerState === registerStates.DONE;
+  const isCreatingUser = registerState === "CREATING";
+  const isCreatingUserError = registerState === "ERROR_CREATING_USER";
+  const isSigningUser = registerState === "SIGNING";
+  const isSigningUserError = registerState === "ERROR_SIGNING_USER";
+  const isRegistrationIDLE = registerState === "IDLE";
+  const isRegistrationDone = registerState === "DONE";
 
   const onFormSubmit = async (e: FormEvent) => {
     e.preventDefault();
     router.prefetch("/");
 
-    setResgisterState(registerStates.CREATING);
+    setResgisterState("CREATING");
 
     const username = usernameRef.current?.value;
     const email = emailRef.current?.value;
@@ -70,25 +65,25 @@ export default function RegisterPage() {
 
     switch (response.status) {
       case 201:
-        setResgisterState(registerStates.SIGNING);
+        setResgisterState("SIGNING");
         handleSignin(email, password);
         return;
       case 409:
-        setResgisterState(registerStates.ERROR_CREATING_USER);
+        setResgisterState("ERROR_CREATING_USER");
         setErrorMessage("Email address already exists, try a different one.");
         return;
       case 422:
-        setResgisterState(registerStates.ERROR_CREATING_USER);
+        setResgisterState("ERROR_CREATING_USER");
         setErrorMessage("Invalid user data.");
         return;
       case 500:
-        setResgisterState(registerStates.ERROR_CREATING_USER);
+        setResgisterState("ERROR_CREATING_USER");
         setErrorMessage(
           "Internal Sever Error, please try agian. If this error persists contact the website owner",
         );
         return;
       default:
-        setResgisterState(registerStates.ERROR_CREATING_USER);
+        setResgisterState("ERROR_CREATING_USER");
         setErrorMessage("Unknown error");
         return;
     }
@@ -103,9 +98,9 @@ export default function RegisterPage() {
 
     if (!signInResult?.error) {
       router.replace("/");
-      setResgisterState(registerStates.DONE);
+      setResgisterState("DONE");
     } else {
-      setResgisterState(registerStates.ERROR_SIGNING_USER);
+      setResgisterState("ERROR_SIGNING_USER");
       setErrorMessage("Failed to signIn, try again manually");
     }
   };
@@ -186,11 +181,7 @@ export default function RegisterPage() {
         <button
           disabled={isCreatingUser || isSigningUser || isRegistrationDone}
           type="submit"
-          className={
-            isCreatingUser || isSigningUser || isRegistrationDone
-              ? "disabled:opacity-75 font-bold mt-8 w-full bg-slate-700 p-2 rounded text-white"
-              : "disabled:opacity-75 font-bold mt-8 w-full bg-slate-700 p-2 rounded text-white"
-          }
+          className="disabled:opacity-75 font-bold mt-8 w-full bg-slate-700 p-2 rounded text-white"
         >
           {isCreatingUser && (
             <div className="flex items-center justify-center gap-2">
