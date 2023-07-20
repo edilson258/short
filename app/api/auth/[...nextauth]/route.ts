@@ -1,3 +1,4 @@
+import { isPasswordEqual } from "@/lib/auth/user-password";
 import { postgresUserRepository } from "@/repositories/implementations/postgres/user-repository";
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
@@ -17,16 +18,18 @@ const handler = NextAuth({
         const password = credentials?.password;
 
         if (!email || !password) {
-          throw new Error("Login failed provide valid information")
+          throw new Error("Login failed provide valid information");
         }
 
         const user = await postgresUserRepository.findByEmail(email);
         if (!user) {
-          throw new Error("Login failed provide valid information")
+          throw new Error("Login failed provide valid information");
         }
 
-        if (password !== user.password) {
-          throw new Error("Login failed, wrong email and password. Verify your credentials and try again")
+        if (!(await isPasswordEqual(password.trim(), user.password))) {
+          throw new Error(
+            "Login failed, wrong email and password. Verify your credentials and try again",
+          );
         }
 
         return {
@@ -40,7 +43,7 @@ const handler = NextAuth({
 
   pages: {
     signIn: "/",
-    signOut: "/signin"
+    signOut: "/signin",
   },
 });
 

@@ -135,7 +135,7 @@ export default function SigninPage() {
         </div>
 
         <div className="mt-8">
-          <button className="text-md flex items-center justify-center gap-2 w-full font-bold p-2 border border-slate-700 rounded">
+          <button type="button" className="text-md flex items-center justify-center gap-2 w-full font-bold p-2 border border-slate-700 rounded">
             <FcGoogle className="text-lg" />
             Google
           </button>

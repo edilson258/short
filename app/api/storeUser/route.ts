@@ -2,7 +2,7 @@ import { postgresUserRepository } from "@/repositories/implementations/postgres/
 import { User } from "@/entities/User";
 import { storeUserRequestVaidator } from "@/lib/validators/storeUserRequestValidator";
 import { NextRequest } from "next/server";
-import { IUserData } from "@/entities/User";
+import { hashPassword } from "@/lib/auth/user-password";
 
 export async function POST(request: NextRequest) {
   const body = await request.json();
@@ -23,12 +23,8 @@ export async function POST(request: NextRequest) {
   if (userAlreadyExists) return new Response(null, { status: 409 });
 
   try {
-    const userData: IUserData = {
-      username,
-      email,
-      password,
-    };
-    const user = new User(userData);
+    password = await hashPassword(password.trim());
+    const user = new User({ username, email, password });
     await postgresUserRepository.save(user);
     return new Response(null, { status: 201 });
   } catch (err) {
