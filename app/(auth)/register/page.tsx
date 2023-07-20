@@ -38,7 +38,6 @@ export default function RegisterPage() {
 
   const onFormSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    router.prefetch("/");
 
     setResgisterState("CREATING");
 
@@ -106,7 +105,7 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="pt-[15%] md:pt-[30%] max-w-xs mx-auto md:max-w-ms min-h-screen text-center text-slate-500">
+    <div className="pt-[20%] md:pt-[10%] pb-16 max-w-xs mx-auto md:max-w-ms min-h-screen text-center text-slate-500">
       <h1 className="text-3xl text-slate-700 font-bold">Welcome</h1>
       <p className="mt-2">Fill the form bellow to create an account</p>
 

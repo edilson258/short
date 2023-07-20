@@ -10,6 +10,7 @@ import LoadingPlaceholder from "react-placeholder-loading";
 import { ShortURLOutput } from "@/components/short-url-output";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { storeURLRequestVaidator } from "@/lib/validators/storeURLRequestValidator";
+import Navbar from "./navbar";
 
 /*
  * TODO:
@@ -22,9 +23,7 @@ type storeURLRequestStates = "IDLE" | "STORING" | "ERROR" | "DONE";
 
 interface IStoreURLProps {
   url: TURLData;
-  setStoreURLRequestState: Dispatch<
-    SetStateAction<storeURLRequestStates | null>
-  >;
+  setStoreURLRequestState: Dispatch<SetStateAction<storeURLRequestStates>>;
 }
 
 async function storeURL({ url, setStoreURLRequestState }: IStoreURLProps) {
@@ -54,7 +53,7 @@ export function Home() {
   const [longURL, setLongURL] = useState<string>("");
   const [canGenerateQRCode, setCanGenerateQRCode] = useState(false);
   const [storeURLRequestState, setStoreURLRequestState] =
-    useState<storeURLRequestStates | null>(null);
+    useState<storeURLRequestStates>("IDLE");
 
   useEffect(() => {
     if (!shortURL || shortURL.length < 10) return;
@@ -78,49 +77,50 @@ export function Home() {
         setCanGenerateQRCode,
       }}
     >
-      <main className="m-auto min-h-screen pt-[18%] mg:pt-[30%] pb-16 max-w-xs md:max-w-sm text-slate-500">
-        <h1 className="mb-12 text-slate-700 text-3xl text-center font-bold drop-shadow-xl">
-          Make it shorter
-        </h1>
-        <p>{JSON.stringify(session, null, 2)}</p>
-        <LongURLInput />
-        {storeURLRequestState === "DONE" && (
-          <ShortURLOutput />
-        )}
-        {storeURLRequestState === "STORING" && (
-          <>
-            <div className="shadow w-full mt-8 rounded overflow-hidden">
-              <LoadingPlaceholder
-                colorStart="white"
-                colorEnd="#f1f5f9"
-                width="100%"
-                height="40px"
-                shape="rect"
-              />
-            </div>
-            {canGenerateQRCode && (
-              <div className="shadow w-full mt-4 rounded overflow-hidden">
+      <>
+        <Navbar />
+        <main className="pt-[20%] md:pt-[10%] pb-16 max-w-xs mx-auto md:max-w-ms min-h-screen text-center text-slate-500">
+          <h1 className="mb-12 text-slate-700 text-3xl text-center font-bold drop-shadow-xl">
+            Make it shorter
+          </h1>
+          <p>{JSON.stringify(session, null, 2)}</p>
+          <LongURLInput />
+          {storeURLRequestState === "DONE" && <ShortURLOutput />}
+          {storeURLRequestState === "STORING" && (
+            <>
+              <div className="shadow w-full mt-8 rounded overflow-hidden">
                 <LoadingPlaceholder
                   colorStart="white"
                   colorEnd="#f1f5f9"
                   width="100%"
-                  height="256px"
+                  height="40px"
                   shape="rect"
                 />
               </div>
-            )}
-          </>
-        )}
-        {storeURLRequestState === "ERROR" && (
-          <div className="w-full text-center text-red-600 mt-8 rounded shadow p-2">
-            <p className="mb-2">Internal Server Error</p>
-            <p className="text-xs">
-              Please try again or contact the website owner if this problem
-              persists.
-            </p>
-          </div>
-        )}
-      </main>
+              {canGenerateQRCode && (
+                <div className="shadow w-full mt-4 rounded overflow-hidden">
+                  <LoadingPlaceholder
+                    colorStart="white"
+                    colorEnd="#f1f5f9"
+                    width="100%"
+                    height="256px"
+                    shape="rect"
+                  />
+                </div>
+              )}
+            </>
+          )}
+          {storeURLRequestState === "ERROR" && (
+            <div className="w-full text-center text-red-600 mt-8 rounded shadow p-2">
+              <p className="mb-2">Internal Server Error</p>
+              <p className="text-xs">
+                Please try again or contact the website owner if this problem
+                persists.
+              </p>
+            </div>
+          )}
+        </main>
+      </>
     </URLContext.Provider>
   );
 }

@@ -39,16 +39,9 @@ const handler = NextAuth({
   ],
 
   pages: {
-    signIn: "/signin",
+    signIn: "/",
     signOut: "/signin"
   },
-
-  callbacks: {
-    async signIn(params) {
-      return true
-    },
-  }
-
 });
 
 export { handler as GET, handler as POST };

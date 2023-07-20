@@ -49,7 +49,7 @@ export default function SigninPage() {
   };
 
   return (
-    <div className="pt-[20%] md:pt-[30%] max-w-xs mx-auto md:max-w-ms min-h-screen text-center text-slate-500">
+    <div className="pt-[20%] md:pt-[10%] pb-16 max-w-xs mx-auto md:max-w-ms min-h-screen text-center text-slate-500">
       <h1 className="text-3xl text-slate-700 font-bold">Welcome back</h1>
       <p className="mt-2">Fill the form bellow to sign in your account</p>
 
