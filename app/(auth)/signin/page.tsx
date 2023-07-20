@@ -48,6 +48,13 @@ export default function SigninPage() {
     }
   };
 
+  const handleSignInWithGoogle = () => {
+    signIn("google", {
+      redirect: true,
+      callbackUrl: "/"
+    });
+  }
+
   return (
     <div className="pt-[20%] md:pt-[10%] pb-16 max-w-xs mx-auto md:max-w-ms min-h-screen text-center text-slate-500">
       <h1 className="text-3xl text-slate-700 font-bold">Welcome back</h1>
@@ -135,7 +142,7 @@ export default function SigninPage() {
         </div>
 
         <div className="mt-8">
-          <button type="button" className="text-md flex items-center justify-center gap-2 w-full font-bold p-2 border border-slate-700 rounded">
+          <button onClick={() => handleSignInWithGoogle()} type="button" className="text-md flex items-center justify-center gap-2 w-full font-bold p-2 border border-slate-700 rounded">
             <FcGoogle className="text-lg" />
             Google
           </button>

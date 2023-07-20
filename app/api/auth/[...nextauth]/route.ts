@@ -2,9 +2,20 @@ import { isPasswordEqual } from "@/lib/auth/user-password";
 import { postgresUserRepository } from "@/repositories/implementations/postgres/user-repository";
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import GoogleProvider from "next-auth/providers/google";
+
+const googleClientId = process.env.GOOGLE_ID;
+const googleClientSecret = process.env.GOOGLE_SECRET;
+
+if (!googleClientId || !googleClientSecret)
+  throw new Error("Failed to load google secrets");
 
 const handler = NextAuth({
   providers: [
+    GoogleProvider({
+      clientId: googleClientId,
+      clientSecret: googleClientSecret,
+    }),
     CredentialsProvider({
       name: "Credentials",
 

@@ -6,8 +6,12 @@ import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { signOut } from "next-auth/react";
 import { Session } from "next-auth"
-import userAvatar from "../public/avatar.jpg"
-import Image from "next/image"
+
+
+/*
+ * TODO::
+ *
+ */
 
 const navigation = [
   { name: "Home", href: "", current: true },
@@ -19,11 +23,15 @@ function classNames(...classes: any) {
 }
 
 export default function Navbar() {
-  const [session, setSession] = useState<Session | null>(null);
+  const [userAvatarURL, setUserAvatarURL] = useState("https://raw.githubusercontent.com/edilson258/files/main/1309537.png")
+  const [_, setSession] = useState<Session | null>(null);
   const { data } = useSession();
 
   useEffect(() => {
     setSession(() => data);
+    if(data && data.user?.image) {
+      setUserAvatarURL(data.user.image)
+    }
   }, [data])
 
   return (
@@ -73,11 +81,11 @@ export default function Navbar() {
               <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
                 <Menu as="div" className="relative ml-3">
                   <div>
-                    <Menu.Button className="border border-2 border-slate-700 flex justify-center items-center h-8 w-8 flex rounded-full bg-white text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-slate-800">
+                    <Menu.Button className="border border-2 border-slate-700 flex justify-center items-center h-8 w-8 flex rounded-full bg-white text-sm focus:outline-none">
                       <span className="sr-only">Open user menu</span>
-                      <Image
-                        className="h-4 w-auto rounded-full"
-                        src={((session) && session?.user?.image) ? session.user.image : userAvatar}
+                      <img
+                        className="w-8 h-auto rounded-full"
+                        src={userAvatarURL}
                         alt=""
                       />
                     </Menu.Button>
