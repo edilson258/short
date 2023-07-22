@@ -14,8 +14,9 @@ import { Session } from "next-auth"
  */
 
 const navigation = [
-  { name: "Home", href: "", current: true },
+  { name: "Home", href: "/", current: true },
   { name: "Analytics", href: "", current: false },
+  { name: "Your Profile", href: "/profile", current: false },
 ];
 
 function classNames(...classes: any) {
@@ -35,14 +36,14 @@ export default function Navbar() {
   }, [data])
 
   return (
-    <Disclosure as="nav" className="shadow bg-white">
+    <Disclosure as="nav" className="z-50 shadow bg-white/30 sticky top-0 backdrop-blur-sm">
       {({ open }: { open: boolean }) => (
         <>
           <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
             <div className="relative flex h-16 items-center justify-between">
               <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
                 {/* Mobile menu button*/}
-                <Disclosure.Button className="inline-flex items-center justify-center rounded-md p-2 text-slate-400 hover:bg-slate-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
+                <Disclosure.Button className="inline-flex items-center justify-center rounded-md p-2 text-slate-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
                   <span className="sr-only">Open main menu</span>
                   {open ? (
                     <HiX className="block h-6 w-6 text-slate-700" aria-hidden="true" />
@@ -103,7 +104,7 @@ export default function Navbar() {
                       <Menu.Item>
                         {({ active }) => (
                           <a
-                            href="#"
+                            href="/profile"
                             className={classNames(
                               active ? "bg-slate-100" : "",
                               "block px-4 py-2 text-sm text-slate-700",
@@ -156,8 +157,8 @@ export default function Navbar() {
                   className={classNames(
                     item.current
                       ? "bg-slate-700 text-white"
-                      : "text-slate-500 hover:bg-slate-700 hover:text-white",
-                    "block rounded-md px-3 py-2 text-base font-medium",
+                      : "hover:bg-slate-700 hover:text-white",
+                    "block rounded-md px-3 py-2 text-slate-700 font-medium",
                   )}
                   aria-current={item.current ? "page" : undefined}
                 >
