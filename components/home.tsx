@@ -9,7 +9,6 @@ import LoadingPlaceholder from "react-placeholder-loading";
 import { ShortURLOutput } from "@/components/short-url-output";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { storeURLRequestVaidator } from "@/lib/validators/storeURLRequestValidator";
-import Navbar from "./navbar";
 
 /*
  * TODO:
@@ -74,49 +73,46 @@ export function Home() {
         setCanGenerateQRCode,
       }}
     >
-      <>
-        <Navbar />
-        <main className="pt-[20%] md:pt-[10%] pb-16 max-w-xs mx-auto md:max-w-ms min-h-screen text-center text-slate-500">
-          <h1 className="mb-12 text-slate-700 text-3xl text-center font-bold drop-shadow-xl">
-            Make it shorter
-          </h1>
-          <LongURLInput />
-          {storeURLRequestState === "DONE" && <ShortURLOutput />}
-          {storeURLRequestState === "STORING" && (
-            <>
-              <div className="shadow w-full mt-8 rounded overflow-hidden">
+      <main className="pt-[20%] md:pt-[10%] pb-16 max-w-xs mx-auto md:max-w-ms min-h-screen text-center text-slate-500">
+        <h1 className="mb-12 text-slate-700 text-3xl text-center font-bold drop-shadow-xl">
+          Make it shorter
+        </h1>
+        <LongURLInput />
+        {storeURLRequestState === "DONE" && <ShortURLOutput />}
+        {storeURLRequestState === "STORING" && (
+          <>
+            <div className="shadow w-full mt-8 rounded overflow-hidden">
+              <LoadingPlaceholder
+                colorStart="white"
+                colorEnd="#f1f5f9"
+                width="100%"
+                height="40px"
+                shape="rect"
+              />
+            </div>
+            {canGenerateQRCode && (
+              <div className="shadow w-full mt-4 rounded overflow-hidden">
                 <LoadingPlaceholder
                   colorStart="white"
                   colorEnd="#f1f5f9"
                   width="100%"
-                  height="40px"
+                  height="256px"
                   shape="rect"
                 />
               </div>
-              {canGenerateQRCode && (
-                <div className="shadow w-full mt-4 rounded overflow-hidden">
-                  <LoadingPlaceholder
-                    colorStart="white"
-                    colorEnd="#f1f5f9"
-                    width="100%"
-                    height="256px"
-                    shape="rect"
-                  />
-                </div>
-              )}
-            </>
-          )}
-          {storeURLRequestState === "ERROR" && (
-            <div className="w-full text-center text-red-600 mt-8 rounded shadow p-2">
-              <p className="mb-2">Internal Server Error</p>
-              <p className="text-xs">
-                Please try again or contact the website owner if this problem
-                persists.
-              </p>
-            </div>
-          )}
-        </main>
-      </>
+            )}
+          </>
+        )}
+        {storeURLRequestState === "ERROR" && (
+          <div className="w-full text-center text-red-600 mt-8 rounded shadow p-2">
+            <p className="mb-2">Internal Server Error</p>
+            <p className="text-xs">
+              Please try again or contact the website owner if this problem
+              persists.
+            </p>
+          </div>
+        )}
+      </main>
     </URLContext.Provider>
   );
 }
