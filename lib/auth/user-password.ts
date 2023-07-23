@@ -7,9 +7,10 @@ export async function hashPassword(plainPassowrd: string): Promise<string> {
 }
 
 export async function isPasswordEqual(
-  plainPassowrd: string,
-  hashedPassword: string,
+  plainPassowrd?: string,
+  hashedPassword?: string,
 ): Promise<boolean> {
+  if (!plainPassowrd || !hashedPassword) return false;
   const result = await bcryptjs.compare(plainPassowrd, hashedPassword);
-  return result
+  return result;
 }

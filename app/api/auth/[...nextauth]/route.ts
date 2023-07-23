@@ -1,3 +1,4 @@
+import { User } from "@/entities/User";
 import { isPasswordEqual } from "@/lib/auth/user-password";
 import { postgresUserRepository } from "@/repositories/implementations/postgres/user-repository";
 import NextAuth from "next-auth";
@@ -55,6 +56,45 @@ const handler = NextAuth({
   pages: {
     signIn: "/",
     signOut: "/signin",
+    error: "/error"
+  },
+
+  callbacks: {
+    async signIn({ account, user }) {
+      if (account?.provider === "credentials") {
+        return true;
+      } else if (account?.provider === "google") {
+        // validating users data from.google provider
+        if (!user.name || !user.email || !user.image) {
+          return false;
+        }
+
+        // check if user's email already exists in our db
+        const userAlreadyExists = await postgresUserRepository.findByEmail(
+          user.email,
+        );
+
+        if (!userAlreadyExists) {
+          // create new User
+          const newUser = new User({
+            username: user.name,
+            email: user.email,
+            avatarURL: user.image,
+            provider: "google",
+          });
+          await postgresUserRepository.save(newUser);
+          return true;
+        }
+
+        if (userAlreadyExists && userAlreadyExists.provider === "google") {
+          return true;
+        }
+
+        throw new Error("Your are trying to sigin using google account but the email of this account is aready in use by another user, please try a different google account")
+      } else {
+        return false;
+      }
+    },
   },
 });
 
