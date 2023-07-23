@@ -2,7 +2,6 @@
 import z from "zod";
 import axios from "axios";
 import { TURLData } from "@/types/URLData";
-import { useSession } from "next-auth/react";
 import { URLContext } from "@/contexts/URLContext";
 import { makeURLShort } from "@/utils/makeURLShort";
 import { LongURLInput } from "@/components/long-url-input";
@@ -63,8 +62,6 @@ export function Home() {
     };
     storeURL({ url, setStoreURLRequestState });
   }, [shortURL]);
-
-  const { data: session } = useSession();
 
   return (
     <URLContext.Provider

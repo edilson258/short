@@ -1,3 +1,4 @@
+"use client"
 import { Fragment } from "react";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { AiOutlineMenu, AiOutlineLink } from "react-icons/ai";
@@ -6,6 +7,7 @@ import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { signOut } from "next-auth/react";
 import { Session } from "next-auth"
+import { usePathname } from "next/navigation";
 
 
 /*
@@ -14,9 +16,9 @@ import { Session } from "next-auth"
  */
 
 const navigation = [
-  { name: "Home", href: "/", current: true },
-  { name: "Analytics", href: "", current: false },
-  { name: "Your Profile", href: "/profile", current: false },
+  { name: "Home", href: "/"},
+  { name: "Analytics", href: "" },
+  { name: "Your Profile", href: "/profile"},
 ];
 
 function classNames(...classes: any) {
@@ -24,6 +26,8 @@ function classNames(...classes: any) {
 }
 
 export default function Navbar() {
+  const path = usePathname()
+
   const [userAvatarURL, setUserAvatarURL] = useState("https://raw.githubusercontent.com/edilson258/files/main/1309537.png")
   const [_, setSession] = useState<Session | null>(null);
   const { data } = useSession();
@@ -34,7 +38,7 @@ export default function Navbar() {
       setUserAvatarURL(data.user.image)
     }
   }, [data])
-
+ 
   return (
     <Disclosure as="nav" className="z-50 shadow bg-white/30 sticky top-0 backdrop-blur-sm">
       {({ open }: { open: boolean }) => (
@@ -66,12 +70,11 @@ export default function Navbar() {
                         key={item.name}
                         href={item.href}
                         className={classNames(
-                          item.current
-                            ? "bg-slate-700 text-white"
-                            : "text-slate-300 hover:bg-slate-700 hover:text-white",
+                          path === item.href ? "bg-slate-700 text-white"
+                            : "text-slate-700 hover:bg-slate-700 hover:text-white",
                           "rounded-md px-3 py-2 text-sm font-medium",
                         )}
-                        aria-current={item.current ? "page" : undefined}
+                        aria-current={path === item.href ? "page" : undefined}
                       >
                         {item.name}
                       </a>
@@ -155,12 +158,11 @@ export default function Navbar() {
                   as="a"
                   href={item.href}
                   className={classNames(
-                    item.current
-                      ? "bg-slate-700 text-white"
+                    path === item.href ? "bg-slate-700 text-white"
                       : "hover:bg-slate-700 hover:text-white",
                     "block rounded-md px-3 py-2 text-slate-700 font-medium",
                   )}
-                  aria-current={item.current ? "page" : undefined}
+                  aria-current={path === item.href ? "page" : undefined}
                 >
                   {item.name}
                 </Disclosure.Button>
