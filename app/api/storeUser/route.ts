@@ -24,7 +24,12 @@ export async function POST(request: NextRequest) {
 
   try {
     password = await hashPassword(password.trim());
-    const user = new User({ username, email, password });
+    const user = new User({
+      username,
+      email,
+      password,
+      provider: "credentials",
+    });
     await postgresUserRepository.save(user);
     return new Response(null, { status: 201 });
   } catch (err) {

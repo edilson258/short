@@ -17,17 +17,19 @@ export class PostgresUserRepository implements IUserRepository {
   private async createTables() {
     const sql = `CREATE TABLE IF NOT EXISTS users(
       _id VARCHAR(50),
-      username VARCHAR(50),
-      email VARCHAR(50),
-      password VARCHAR(256)
+      username VARCHAR(256) NOT NULL,
+      email VARCHAR(50) NOT NULL,
+      avatar_url VARCHAR(256),
+      password VARCHAR(256),
+      provider VARCHAR(15) NOT NULL
     )`;
     await this.postgresClient.query(sql);
   }
 
   save = async (user: User): Promise<void> => {
     const sql = `
-      INSERT INTO users (_id, username, email, password)
-      VALUES ('${user._id}', '${user.username}', '${user.email}', '${user.password}')
+      INSERT INTO users (_id, username, email, avatar_url, password, provider)
+      VALUES ('${user._id}', '${user.username}', '${user.email}', '${user.avatarURL}','${user.password}', '${user.provider}')
     `;
     await this.postgresClient.query(sql);
   };
@@ -45,7 +47,9 @@ export class PostgresUserRepository implements IUserRepository {
       _id: result.rows[0]._id,
       username: result.rows[0].username,
       email: result.rows[0].email,
+      avatarURL: result.rows[0].avatar_url,
       password: result.rows[0].password,
+      provider: result.rows[0].provider,
     };
 
     return new User(userData);
