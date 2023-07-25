@@ -74,6 +74,10 @@ const handler = NextAuth({
           user.email,
         );
 
+        if (userAlreadyExists && userAlreadyExists.provider === "google") {
+          return true;
+        }
+
         if (!userAlreadyExists) {
           // create new User
           const newUser = new User({
@@ -86,15 +90,38 @@ const handler = NextAuth({
           return true;
         }
 
-        if (userAlreadyExists && userAlreadyExists.provider === "google") {
-          return true;
-        }
-
         throw new Error("Your are trying to sigin using google account but the email of this account is aready in use by another user, please try a different google account")
       } else {
         return false;
       }
     },
+
+    async jwt(params) {
+      if(params.account?.provider === "google") {
+        return {
+          ...params.token,
+          _id: (await postgresUserRepository.findByEmail(params.token.email || ""))?._id
+        }
+      }
+
+      if(params.user) {
+        return {
+          ...params.token,
+          _id: params.user.id
+        }
+      }
+      return params.token
+    },
+
+    async session(params) {
+      return {
+        ...params.session,
+        user: {
+          ...params.session.user,
+          _id: params.token._id
+        }
+      }
+    }
   },
 });
 

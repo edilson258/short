@@ -1,7 +1,7 @@
 import { FormEvent, useContext, useState } from "react";
 import { RiQrCodeLine } from "react-icons/ri";
-import { URLContext } from "@/contexts/URLContext";
-import { makeURLShort } from "@/utils/makeURLShort";
+import { LinkContext } from "@/contexts/LinkContext";
+import { hashLongLink } from "@/lib/hashLongLink";
 
 /*
  * TODO:
@@ -11,20 +11,20 @@ import { makeURLShort } from "@/utils/makeURLShort";
  */
 
 export function LongURLInput() {
-  const urlContext = useContext(URLContext);
+  const linkContext = useContext(LinkContext);
   const [isValidURL, setIsValidURL] = useState(true);
 
   const handleFormSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (!urlContext?.longURL.toLowerCase().startsWith("http")) {
+    if (!linkContext?.longLink.toLowerCase().startsWith("http")) {
       setIsValidURL(false);
       return;
     }
 
-    if (!urlContext?.longURL) return;
-    const newShortURL = makeURLShort(urlContext.longURL);
-    urlContext?.setShortURL(window.location.href + newShortURL);
+    if (!linkContext?.longLink) return;
+    const newShortURL = hashLongLink(linkContext.longLink);
+    linkContext?.setShortLink(window.location.href + newShortURL);
   };
 
   return (
@@ -33,7 +33,7 @@ export function LongURLInput() {
         onInput={(e) => {
           setIsValidURL(true)
           const target = e.target as HTMLInputElement;
-          urlContext?.setLongURL(target.value);
+          linkContext?.setLongLink(target.value);
         }}
         rows={4}
         className={
@@ -54,9 +54,9 @@ export function LongURLInput() {
 
       <div className="flex items-center gap-2 mb-8 w-fit text-slate-700">
         <input
-          checked={urlContext?.canGenerateQRCode}
+          checked={linkContext?.canGenerateQRCode}
           onChange={() =>
-            urlContext?.setCanGenerateQRCode(
+            linkContext?.setCanGenerateQRCode(
               (canGenerateQRCode) => !canGenerateQRCode
             )
           }
@@ -64,7 +64,7 @@ export function LongURLInput() {
         />
         <div
           onClick={() =>
-            urlContext?.setCanGenerateQRCode(
+            linkContext?.setCanGenerateQRCode(
               (canGenerateQRCode) => !canGenerateQRCode
             )
           }
@@ -79,7 +79,7 @@ export function LongURLInput() {
 
       <button
         disabled={
-          urlContext?.longURL && urlContext.longURL.length > 0
+          linkContext?.longLink && linkContext.longLink.length > 0
             ? false
             : true
         }

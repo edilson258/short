@@ -1,5 +1,5 @@
 import { PostgresDriver } from "../PostgresDriver";
-import { PostgresURLRepository } from "./PostgresURLRepository";
+import { PostgresLinkRepository } from "./PostgresLinkRepository";
 
 const PG_CONNECTION_STRING = process.env.PG_CONNECTION_STRING;
 if (!PG_CONNECTION_STRING)
@@ -7,8 +7,8 @@ if (!PG_CONNECTION_STRING)
 
 const postgresDriver = new PostgresDriver(PG_CONNECTION_STRING);
 
-const postgresURLRepository = new PostgresURLRepository(
+const postgresLinkRepository = new PostgresLinkRepository(
   postgresDriver.getPostgresClient()
 );
 
-export { postgresURLRepository };
+export { postgresLinkRepository };

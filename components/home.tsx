@@ -1,14 +1,15 @@
 "use client";
 import z from "zod";
 import axios from "axios";
-import { TURLData } from "@/types/URLData";
-import { URLContext } from "@/contexts/URLContext";
-import { makeURLShort } from "@/utils/makeURLShort";
+import { LinkContext } from "@/contexts/LinkContext";
+import { hashLongLink } from "@/lib/hashLongLink";
 import { LongURLInput } from "@/components/long-url-input";
 import LoadingPlaceholder from "react-placeholder-loading";
 import { ShortURLOutput } from "@/components/short-url-output";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { storeURLRequestVaidator } from "@/lib/validators/storeURLRequestValidator";
+import { storeLinkRequestVaidator } from "@/lib/validators/storeLinkRequestValidator";
+import { useSession } from "next-auth/react";
+import { TLinkData } from "@/entities/Link";
 
 /*
  * TODO:
@@ -20,21 +21,18 @@ import { storeURLRequestVaidator } from "@/lib/validators/storeURLRequestValidat
 type storeURLRequestStates = "IDLE" | "STORING" | "ERROR" | "DONE";
 
 interface IStoreURLProps {
-  url: TURLData;
+  linkData: TLinkData;
   setStoreURLRequestState: Dispatch<SetStateAction<storeURLRequestStates>>;
 }
 
-async function storeURL({ url, setStoreURLRequestState }: IStoreURLProps) {
+async function storeURL({ linkData, setStoreURLRequestState }: IStoreURLProps) {
   setStoreURLRequestState("STORING");
 
-  type TStoreURLRequestPayload = z.infer<typeof storeURLRequestVaidator>;
-  const storeURLRequestPayload: TStoreURLRequestPayload = {
-    longURL: url.longURL,
-    longURLHash: url.longURLHash,
-  };
+  type TStoreURLRequestPayload = z.infer<typeof storeLinkRequestVaidator>;
+  const storeURLRequestPayload: TStoreURLRequestPayload = linkData;
 
   try {
-    const response = await axios.post("/api/storeURL", storeURLRequestPayload);
+    const response = await axios.post("/api/storeLink", storeURLRequestPayload);
     switch (response.status) {
       case 500:
         setStoreURLRequestState("ERROR");
@@ -47,28 +45,34 @@ async function storeURL({ url, setStoreURLRequestState }: IStoreURLProps) {
 }
 
 export function Home() {
-  const [shortURL, setShortURL] = useState<string | null>(null);
-  const [longURL, setLongURL] = useState<string>("");
+  const [shortLink, setShortLink] = useState<string | null>(null);
+  const [longLink, setLongLink] = useState<string>("");
   const [canGenerateQRCode, setCanGenerateQRCode] = useState(false);
+
   const [storeURLRequestState, setStoreURLRequestState] =
     useState<storeURLRequestStates>("IDLE");
+  const { data: session } = useSession();
 
   useEffect(() => {
-    if (!shortURL || shortURL.length < 10) return;
-    const url: TURLData = {
-      longURL,
-      longURLHash: makeURLShort(longURL),
+    /* @ts-ignore: _id field is set in next-auth config but the Session class type doesn't recognize it */
+    const userID = session?.user._id;
+
+    if (!shortLink || shortLink.length < 10) return;
+    const linkData: TLinkData = {
+      userID: userID,
+      longLink,
+      longLinkHash: hashLongLink(longLink),
     };
-    storeURL({ url, setStoreURLRequestState });
-  }, [shortURL]);
+    storeURL({ linkData, setStoreURLRequestState });
+  }, [shortLink]);
 
   return (
-    <URLContext.Provider
+    <LinkContext.Provider
       value={{
-        shortURL,
-        setShortURL,
-        longURL,
-        setLongURL,
+        shortLink,
+        setShortLink,
+        longLink,
+        setLongLink,
         canGenerateQRCode,
         setCanGenerateQRCode,
       }}
@@ -77,6 +81,7 @@ export function Home() {
         <h1 className="mb-12 text-slate-700 text-3xl text-center font-bold drop-shadow-xl">
           Make it shorter
         </h1>
+        {JSON.stringify(session, null, 2)}
         <LongURLInput />
         {storeURLRequestState === "DONE" && <ShortURLOutput />}
         {storeURLRequestState === "STORING" && (
@@ -113,6 +118,6 @@ export function Home() {
           </div>
         )}
       </main>
-    </URLContext.Provider>
+    </LinkContext.Provider>
   );
 }

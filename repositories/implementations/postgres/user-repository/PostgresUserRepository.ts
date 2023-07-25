@@ -16,9 +16,9 @@ export class PostgresUserRepository implements IUserRepository {
 
   private async createTables() {
     const sql = `CREATE TABLE IF NOT EXISTS users(
-      _id VARCHAR(50),
+      _id VARCHAR(50) NOT NULL UNIQUE PRIMARY KEY,
       username VARCHAR(256) NOT NULL,
-      email VARCHAR(50) NOT NULL,
+      email VARCHAR(50) NOT NULL UNIQUE,
       avatar_url VARCHAR(256),
       password VARCHAR(256),
       provider VARCHAR(15) NOT NULL

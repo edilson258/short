@@ -1,9 +1,9 @@
 import crypto from "crypto";
 
-export function makeURLShort(longURL: string) {
+export function hashLongLink(longLink: string) {
   const hashObj = crypto.createHash("sha512");
   return hashObj
-    .update(longURL, "utf-8")
+    .update(longLink, "utf-8")
     .digest("base64")
     .replace("/", "-")
     .replace("+", "_")
