@@ -51,4 +51,19 @@ export class PostgresLinkRepository implements ILinkRepository {
       longLinkHash: row.long_link_hash,
     });
   };
+
+  public listLinksByEmail = async (email: string): Promise<Link[]> => {
+    const sql = `SELECT * FROM links WHERE user_id = (SELECT _id FROM users WHERE email = '${email}')`;
+    const result = await this.postgresClient.query(sql);
+    if (!result) return [];
+    const links: Link[] = result.rows.map((row) => {
+      return {
+        _id: row._id,
+        userID: row.user_id,
+        longLink: row.long_link,
+        longLinkHash: row.long_link_hash,
+      };
+    });
+    return links;
+  };
 }

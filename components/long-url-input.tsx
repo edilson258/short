@@ -3,48 +3,41 @@ import { RiQrCodeLine } from "react-icons/ri";
 import { LinkContext } from "@/contexts/LinkContext";
 import { hashLongLink } from "@/lib/hashLongLink";
 
-/*
- * TODO:
- *     ::
- *
- *
- */
-
-export function LongURLInput() {
+export function LongLinkInput() {
   const linkContext = useContext(LinkContext);
-  const [isValidURL, setIsValidURL] = useState(true);
+  const [isValidLink, setIsValidLink] = useState(true);
 
   const handleFormSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!linkContext?.longLink.toLowerCase().startsWith("http")) {
-      setIsValidURL(false);
+      setIsValidLink(false);
       return;
     }
 
     if (!linkContext?.longLink) return;
-    const newShortURL = hashLongLink(linkContext.longLink);
-    linkContext?.setShortLink(window.location.href + newShortURL);
+    const newShortLink = hashLongLink(linkContext.longLink);
+    linkContext?.setShortLink(window.location.href + newShortLink);
   };
 
   return (
     <form onSubmit={handleFormSubmit}>
       <textarea
         onInput={(e) => {
-          setIsValidURL(true)
+          setIsValidLink(true)
           const target = e.target as HTMLInputElement;
           linkContext?.setLongLink(target.value);
         }}
         rows={4}
         className={
-          isValidURL
+          isValidLink
             ? "text-slate-700 w-full mb-1 border text-lg indent-1 border-2 rounded focus:outline-slate-500"
             : "text-slate-700 w-full mb-1 border text-lg indent-1 border-2 border-red-500 rounded focus:outline-red-500"
         }
         placeholder="Paste long url"
       />
 
-      {!isValidURL && (
+      {!isValidLink && (
         <p className="italic text-left mb-4 text-red-500 opacity-80">
           <span className="font-bold">NOTE</span>: url should start with
           <span className="underline underline-offset-2 font-bold text-sky-500"> http</span> or
@@ -52,7 +45,7 @@ export function LongURLInput() {
         </p>
       )}
 
-      <div className="flex items-center gap-2 mb-8 w-fit text-slate-700">
+      <div className="flex items-center gap-2 mb-8 w-full text-slate-700">
         <input
           checked={linkContext?.canGenerateQRCode}
           onChange={() =>

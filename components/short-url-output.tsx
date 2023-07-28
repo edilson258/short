@@ -4,17 +4,10 @@ import QRCode from "react-qr-code";
 import { IoIosCopy } from "react-icons/io";
 import { IoMdDownload } from "react-icons/io";
 
-/*
- * TODO:
- *     ::
- *
- *
- */
-
-export function ShortURLOutput() {
+export function ShortLinkOutput() {
   const urlContext = useContext(LinkContext);
 
-  const [isURLCopied, setIsURLCopied] = useState(false);
+  const [isLinkCopied, setIsLinkCopied] = useState(false);
   const QRCodeWrapRef = useRef<HTMLDivElement>(null);
 
   const downloadQRCodeAsPNG = () => {
@@ -38,11 +31,11 @@ export function ShortURLOutput() {
 
     image.onload = () => {
       context.drawImage(image, 0, 0);
-      const dataURL = canvas.toDataURL();
-      const imageDownloadURL = document.createElement("a");
-      imageDownloadURL.href = dataURL;
-      imageDownloadURL.download = "qrcode.png";
-      imageDownloadURL.click();
+      const dataLink = canvas.toDataURL();
+      const imageDownloadLink = document.createElement("a");
+      imageDownloadLink.href = dataLink;
+      imageDownloadLink.download = "qrcode.png";
+      imageDownloadLink.click();
     };
 
     image.src =
@@ -52,22 +45,22 @@ export function ShortURLOutput() {
   const copyToClipBoard = () => {
     urlContext?.shortLink &&
       navigator.clipboard.writeText(urlContext?.shortLink);
-    setIsURLCopied(true);
+    setIsLinkCopied(true);
 
-    // Tell the user that URL was copied and after for 3 seconds
+    // Tell the user that Link was copied and after for 3 seconds
     setTimeout(() => {
-      setIsURLCopied(false)
+      setIsLinkCopied(false)
     }, 3000)
   };
 
   
 
   return (
-    <div className="mt-8">
+    <div className="mt-8 md:mt-0">
       <div className="text-slate-700 shadow p-2 rounded flex justify-between items-center">
         <span>{urlContext?.shortLink}</span>
         <span>
-          {isURLCopied ? (
+          {isLinkCopied ? (
             "copied"
           ) : (
             <IoIosCopy onClick={() => copyToClipBoard()} />
