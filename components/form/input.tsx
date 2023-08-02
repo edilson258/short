@@ -19,7 +19,7 @@ export default function FormInput(props: IFormInput) {
         </label>
       )}
       <input
-        onInput={(e) => props.setValue(e.target.value)}
+        onChange={(e) => props.setValue(e.target.value)}
         className={props.className}
         type={props.type}
         id={props.id}
