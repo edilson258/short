@@ -7,6 +7,10 @@ import { IoMdDownload } from "react-icons/io";
 export function ShortLinkOutput() {
   const urlContext = useContext(LinkContext);
 
+  const getShortLink = () => {
+    return window.location.origin + "/" + urlContext?.shortLink
+  }
+
   const [isLinkCopied, setIsLinkCopied] = useState(false);
   const QRCodeWrapRef = useRef<HTMLDivElement>(null);
 
@@ -44,7 +48,7 @@ export function ShortLinkOutput() {
 
   const copyToClipBoard = () => {
     urlContext?.shortLink &&
-      navigator.clipboard.writeText(urlContext?.shortLink);
+      navigator.clipboard.writeText(getShortLink());
     setIsLinkCopied(true);
 
     // Tell the user that Link was copied and after for 3 seconds
@@ -53,12 +57,11 @@ export function ShortLinkOutput() {
     }, 3000)
   };
 
-  
 
   return (
     <div className="mt-8 md:mt-0">
       <div className="text-slate-700 shadow p-2 rounded flex justify-between items-center">
-        <span>{urlContext?.shortLink}</span>
+        <span>{getShortLink()}</span>
         <span>
           {isLinkCopied ? (
             "copied"
@@ -75,7 +78,7 @@ export function ShortLinkOutput() {
           <QRCode
             bgColor="#000000"
             fgColor="#FFFFFF"
-            value={urlContext?.shortLink || ""}
+            value={getShortLink()}
             onClick={downloadQRCodeAsPNG}
           />
           <div className="absolute shadow-lg top-0 right-0 rounded-tr p-1 bg-slate-700">

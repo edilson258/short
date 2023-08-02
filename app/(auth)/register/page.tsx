@@ -1,108 +1,80 @@
 "use client";
-import * as z from "zod";
-import { signIn } from "next-auth/react";
 import { FcGoogle } from "react-icons/fc";
 import { CgSpinner } from "react-icons/cg";
-import { FormEvent, useRef, useState } from "react";
-import { storeUserRequestVaidator } from "@/lib/validators/storeUserRequestValidator";
+import { FormEvent, useState } from "react";
+import FormInput from "@/components/form/input";
+import { createUserRequest } from "./storeUserRequest";
+import { handleAutoSignin } from "./handleAutoSignin";
+import { TRegisterStates } from "./types";
 import { useRouter } from "next/navigation";
-
-type registerStates =
-  | "IDLE"
-  | "CREATING"
-  | "SIGNING"
-  | "ERROR_CREATING_USER"
-  | "ERROR_SIGNING_USER"
-  | "DONE";
 
 export default function RegisterPage() {
   const router = useRouter();
 
-  // Form Data
-  const usernameRef = useRef<HTMLInputElement>(null);
-  const emailRef = useRef<HTMLInputElement>(null);
-  const passwordRef = useRef<HTMLInputElement>(null);
+  const [username, setUsername] = useState<string | null>(null);
+  const [email, setEmail] = useState<string | null>(null);
+  const [password, setPassword] = useState<string | null>(null);
 
-  const [isInvalidFormData, setIsInvalidFormData] = useState(false);
-
-  const [registerState, setResgisterState] = useState<registerStates>("IDLE");
+  const [registerState, setResgisterState] = useState<TRegisterStates>("IDLE");
   const [errorMessage, setErrorMessage] = useState("");
 
-  // Progress status and error handling
+  const onFormSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+
+    setResgisterState(() => "CREATING");
+
+    if (!username || !email || !password) {
+      setResgisterState(() => "ERROR_CREATING_USER");
+      setErrorMessage(() => "Please fill the form with valid informations.");
+      return;
+    }
+
+    const { status: createUserResponseStatus } = await createUserRequest({
+      username,
+      email,
+      password,
+    });
+
+    switch (createUserResponseStatus) {
+      case 201:
+        setResgisterState(() => "SIGNING");
+        const { status: autoSignInStatus, msg } = await handleAutoSignin({
+          email,
+          password,
+        });
+        if (autoSignInStatus === 200) {
+          setResgisterState(() => "DONE");
+          router.replace("/");
+        } else {
+          setResgisterState(() => "ERROR_SIGNING_USER");
+          setErrorMessage(() => msg || "Unknown Error Occured!");
+        }
+        return;
+      case 409:
+        setResgisterState(() => "ERROR_CREATING_USER");
+        setErrorMessage(() => "Email address is already used");
+        return;
+      case 422:
+        setResgisterState(() => "ERROR_CREATING_USER");
+        setErrorMessage(() => "Provided user data is invalid");
+        return;
+      case 500:
+        setResgisterState(() => "ERROR_CREATING_USER");
+        setErrorMessage(() => "Internal Server Error");
+        return;
+      default:
+        setResgisterState(() => "ERROR_CREATING_USER");
+        setErrorMessage(() => "Unknown Error Occured");
+        return;
+    }
+  };
+
   const isCreatingUser = registerState === "CREATING";
   const isCreatingUserError = registerState === "ERROR_CREATING_USER";
   const isSigningUser = registerState === "SIGNING";
   const isSigningUserError = registerState === "ERROR_SIGNING_USER";
   const isRegistrationIDLE = registerState === "IDLE";
   const isRegistrationDone = registerState === "DONE";
-
-  const onFormSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-
-    setResgisterState("CREATING");
-
-    const username = usernameRef.current?.value;
-    const email = emailRef.current?.value;
-    const password = passwordRef.current?.value;
-
-    if (!username || !email || !password) {
-      setIsInvalidFormData(true);
-      return;
-    }
-
-    type TStoreUserPayload = z.infer<typeof storeUserRequestVaidator>;
-    const storeUserPayload: TStoreUserPayload = {
-      username,
-      email,
-      password,
-    };
-
-    const response = await fetch("/api/storeUser", {
-      method: "POST",
-      body: JSON.stringify(storeUserPayload),
-    });
-
-    switch (response.status) {
-      case 201:
-        setResgisterState("SIGNING");
-        handleSignin(email, password);
-        return;
-      case 409:
-        setResgisterState("ERROR_CREATING_USER");
-        setErrorMessage("Email address already exists, try a different one.");
-        return;
-      case 422:
-        setResgisterState("ERROR_CREATING_USER");
-        setErrorMessage("Invalid user data.");
-        return;
-      case 500:
-        setResgisterState("ERROR_CREATING_USER");
-        setErrorMessage(
-          "Internal Sever Error, please try agian. If this error persists contact the website owner",
-        );
-        return;
-      default:
-        setResgisterState("ERROR_CREATING_USER");
-        setErrorMessage("Unknown error");
-        return;
-    }
-  };
-
-  const handleSignin = async (email: string, password: string) => {
-    const signInResult = await signIn("credentials", {
-      email,
-      password,
-      redirect: false,
-    });
-
-    if (!signInResult?.error) {
-      router.replace("/");
-      setResgisterState("DONE");
-    } else {
-      setResgisterState("ERROR_SIGNING_USER");
-      setErrorMessage("Failed to signIn, try again manually");
-    }
-  };
 
   return (
     <div className="pt-[20%] md:pt-[10%] pb-16 max-w-xs mx-auto md:max-w-ms min-h-screen text-center text-slate-500">
@@ -117,30 +89,25 @@ export default function RegisterPage() {
       )}
 
       <form onSubmit={onFormSubmit} className="text-left my-8">
-        <label
-          className="block text-slate-600 font-bold mb-2"
-          htmlFor="username"
-        >
-          Username
-        </label>
-        <input
-          ref={usernameRef}
+        <FormInput
+          autoFocus
+          hasLabel
+          labelName="Username"
+          labelClassName="block text-slate-600 font-bold mb-2"
+          setValue={setUsername}
           className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-slate-700"
           type="text"
           id="username"
           placeholder="your username"
           autoComplete="name"
           name="username"
-          autoFocus
         />
-        <label
-          className="block text-slate-600 font-bold mb-2 mt-4"
-          htmlFor="email"
-        >
-          Email
-        </label>
-        <input
-          ref={emailRef}
+
+        <FormInput
+          hasLabel
+          labelName="Email"
+          labelClassName="block text-slate-600 font-bold mb-2 mt-4"
+          setValue={setEmail}
           className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-slate-700"
           autoCorrect="off"
           autoComplete="email"
@@ -150,14 +117,12 @@ export default function RegisterPage() {
           name="email"
           placeholder="address@example.com"
         />
-        <label
-          className="block text-slate-600 font-bold mb-2 mt-4"
-          htmlFor="password"
-        >
-          Password
-        </label>
-        <input
-          ref={passwordRef}
+
+        <FormInput
+          hasLabel
+          labelName="Password"
+          labelClassName="block text-slate-600 font-bold mb-2 mt-4"
+          setValue={setPassword}
           className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-slate-700"
           autoCorrect="off"
           autoComplete="password"
@@ -215,7 +180,10 @@ export default function RegisterPage() {
       </div>
 
       <div className="mt-8">
-        <button type="button" className="text-md flex items-center justify-center gap-2 w-full font-bold p-2 border border-slate-700 rounded">
+        <button
+          type="button"
+          className="text-md flex items-center justify-center gap-2 w-full font-bold p-2 border border-slate-700 rounded"
+        >
           <FcGoogle className="text-lg" />
           Google
         </button>
