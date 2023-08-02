@@ -134,7 +134,7 @@ export default function Home() {
             )}
           </div>
         </div>
-        {storeLinkRequestState === "ERROR" && <ShowError {...error} />}
+        {storeLinkRequestState === "ERROR" && <ShowError errorMessage={error.errorMessage} />}
       </main>
     </LinkContext.Provider>
   );
