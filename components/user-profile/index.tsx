@@ -31,7 +31,7 @@ export function UserProfile({ session }: { session: Session }) {
             Shortned Links
           </h1>
           { /* @ts-ignore: Unsing an async component */ }
-          { session.user?.email && <UserLinkList email={session.user?.email} />}
+          { session.user?.email && <UserLinkList userID={session.user._id} />}
         </div>
       </div>
     </main>

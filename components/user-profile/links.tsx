@@ -2,11 +2,9 @@ import { ExpandableContent } from "../expandable";
 import Link from "@/entities/Link";
 import { postgresLinkRepository } from "@/repositories/implementations/postgres/link-repository";
 
-export async function UserLinkList({ email }: { email: string }) {
-  const userLinks: Link[] = await postgresLinkRepository.listLinksByEmail(
-    email,
-  );
-  
+export async function UserLinkList({ userID }: { userID: string }) {
+  const userLinks: Link[] = await postgresLinkRepository.listLinksByUserID(userID)
+
 
   return (
     <div className="py-2 mt-2 px-1 max-h-64 overflow-y-auto">

@@ -7,6 +7,8 @@ import { createUserRequest } from "./storeUserRequest";
 import { handleAutoSignin } from "./handleAutoSignin";
 import { TRegisterStates } from "./types";
 import { useRouter } from "next/navigation";
+import { SignInWithGoogleButton } from "@/components/sign-with-google-btn";
+import { signIn } from "next-auth/react";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -75,6 +77,13 @@ export default function RegisterPage() {
   const isSigningUserError = registerState === "ERROR_SIGNING_USER";
   const isRegistrationIDLE = registerState === "IDLE";
   const isRegistrationDone = registerState === "DONE";
+
+  const handleSignInWithGoogle = () => {
+    signIn("google", {
+      redirect: true,
+      callbackUrl: "/",
+    });
+  };
 
   return (
     <div className="pt-[20%] md:pt-[10%] pb-16 max-w-xs mx-auto md:max-w-ms min-h-screen text-center text-slate-500">
@@ -179,15 +188,9 @@ export default function RegisterPage() {
         </div>
       </div>
 
-      <div className="mt-8">
-        <button
-          type="button"
-          className="text-md flex items-center justify-center gap-2 w-full font-bold p-2 border border-slate-700 rounded"
-        >
-          <FcGoogle className="text-lg" />
-          Google
-        </button>
-      </div>
+      <SignInWithGoogleButton
+        handleSignInWithGoogle={handleSignInWithGoogle}
+      />
     </div>
   );
 }

@@ -4,6 +4,7 @@ import { FcGoogle } from "react-icons/fc";
 import { CgSpinner } from "react-icons/cg";
 import { useRouter } from "next/navigation";
 import { FormEvent, useRef, useState } from "react";
+import { SignInWithGoogleButton } from "@/components/sign-with-google-btn";
 
 type signinStates = "IDLE" | "SIGNING" | "ERROR" | "DONE";
 
@@ -51,9 +52,9 @@ export default function SigninPage() {
   const handleSignInWithGoogle = () => {
     signIn("google", {
       redirect: true,
-      callbackUrl: "/"
+      callbackUrl: "/",
     });
-  }
+  };
 
   return (
     <div className="pt-[20%] md:pt-[10%] pb-16 max-w-xs mx-auto md:max-w-ms min-h-screen text-center text-slate-500">
@@ -141,12 +142,9 @@ export default function SigninPage() {
           </div>
         </div>
 
-        <div className="mt-8">
-          <button onClick={() => handleSignInWithGoogle()} type="button" className="text-md flex items-center justify-center gap-2 w-full font-bold p-2 border border-slate-700 rounded">
-            <FcGoogle className="text-lg" />
-            Google
-          </button>
-        </div>
+        <SignInWithGoogleButton
+          handleSignInWithGoogle={handleSignInWithGoogle}
+        />
       </form>
     </div>
   );

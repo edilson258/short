@@ -37,7 +37,6 @@ export class PostgresLinkRepository implements ILinkRepository {
   public queryLinkByHash = async (
     longLinkHash: string,
   ): Promise<Link | null> => {
-    await this.sync();
     const queryText = `
       SELECT * FROM links WHERE long_link_hash = '${longLinkHash}' LIMIT 1;
     `;
@@ -48,21 +47,20 @@ export class PostgresLinkRepository implements ILinkRepository {
       _id: row._id,
       userID: row.user_id,
       longLink: row.long_link,
-      longLinkHash: row.long_link_hash,
     });
   };
 
-  public listLinksByEmail = async (email: string): Promise<Link[]> => {
-    const sql = `SELECT * FROM links WHERE user_id = (SELECT _id FROM users WHERE email = '${email}')`;
+  public listLinksByUserID = async (userID: string): Promise<Link[]> => {
+    await this.sync();
+    const sql = `SELECT * FROM links WHERE user_id = '${userID}'`;
     const result = await this.postgresClient.query(sql);
     if (!result) return [];
     const links: Link[] = result.rows.map((row) => {
-      return {
+      return new Link({
         _id: row._id,
         userID: row.user_id,
         longLink: row.long_link,
-        longLinkHash: row.long_link_hash,
-      };
+      });
     });
     return links;
   };
