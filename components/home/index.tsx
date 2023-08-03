@@ -9,6 +9,7 @@ import { ShowError } from "./error";
 import { TStoreLinkRequestStates } from "./types";
 import { storeLinkRequest, IStoreLinkProps } from "./storeLinkRequest";
 import Link from "@/entities/Link";
+import { Container } from "../container";
 
 export default function Home() {
   const { data: session } = useSession();
@@ -42,7 +43,10 @@ export default function Home() {
 
     const userID = session?.user._id;
     if (!userID) {
-      setError({ isError: true, errorMessage: "Please try again" });
+      setError({
+        isError: true,
+        errorMessage: "Invalid user data, Please try to sign in again",
+      });
       return;
     }
 
@@ -52,14 +56,17 @@ export default function Home() {
     });
 
     if (!response) {
-      setError({ isError: true, errorMessage: "Unknown Error Occured, try again" })
+      setError({
+        isError: true,
+        errorMessage: "Unknown Error Occured, try again",
+      });
       return;
     }
 
-    const link = response.link as Link
+    const link = response.link as Link;
 
     setShortLink(() => link.longLinkHash);
-    setStoreLinkRequestState("DONE")
+    setStoreLinkRequestState("DONE");
   };
 
   const handleStoreLink = async (linkData: IStoreLinkProps) => {
@@ -99,7 +106,7 @@ export default function Home() {
         setCanGenerateQRCode,
       }}
     >
-      <main className="max-w-xs md:max-w-2xl mx-auto pt-[20%] md:pt-[10%] pb-16 min-h-screen text-center text-slate-500">
+      <Container>
         <h1 className="mb-12 text-slate-700 text-3xl text-center font-bold drop-shadow-xl">
           Make it shorter
         </h1>
@@ -107,7 +114,7 @@ export default function Home() {
           className={
             storeLinkRequestState === "IDLE"
               ? "w-full"
-              : "md:flex justify-between gap-8"
+              : "w-full md:flex justify-between gap-8"
           }
         >
           <div className="flex-1 max-w-md mx-auto">
@@ -123,19 +130,21 @@ export default function Home() {
           <div className="flex-1">
             {storeLinkRequestState === "DONE" && <ShortLinkOutput />}
             {storeLinkRequestState === "STORING" && (
-              <>
+              <div className="mt-8 md:mt-0">
                 <CustomLoadingPlaceholder heightInPixels={40} />
                 {canGenerateQRCode && (
                   <div className="mt-4">
                     <CustomLoadingPlaceholder heightInPixels={256} />
                   </div>
                 )}
-              </>
+              </div>
             )}
           </div>
         </div>
-        {storeLinkRequestState === "ERROR" && <ShowError errorMessage={error.errorMessage} />}
-      </main>
+        {storeLinkRequestState === "ERROR" && (
+          <ShowError errorMessage={error.errorMessage} />
+        )}
+      </Container>
     </LinkContext.Provider>
   );
 }

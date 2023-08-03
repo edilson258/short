@@ -34,8 +34,8 @@ export function LongLinkInput(props: ILongLinkInputProps) {
         rows={4}
         className={
           props.isValidLongLink
-            ? "text-slate-700 w-full mb-1 border text-lg indent-1 border-2 rounded focus:outline-slate-500"
-            : "text-slate-700 w-full mb-1 border text-lg indent-1 border-2 border-red-500 rounded focus:outline-red-500"
+            ? "text-slate-700 w-full mb-1 border text-lg p-2 border-2 rounded focus:outline-slate-500"
+            : "text-slate-700 w-full mb-1 border text-lg p-2 border-2 border-red-500 rounded focus:outline-red-500"
         }
         placeholder="Paste long url"
       />

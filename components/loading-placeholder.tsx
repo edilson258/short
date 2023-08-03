@@ -7,7 +7,7 @@ interface ILoadingPlaceholder {
 
 export function CustomLoadingPlaceholder({ widthInPixels, heightInPixels }: ILoadingPlaceholder) {
   return (
-    <div className="shadow w-full mt-8 md:mt-0 rounded overflow-hidden">
+    <div className="shadow w-full md:mt-0 rounded overflow-hidden">
       <LoadingPlaceholder
         colorStart="white"
         colorEnd="#f1f5f9"

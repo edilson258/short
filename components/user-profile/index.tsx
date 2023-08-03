@@ -16,18 +16,19 @@ export function UserProfile({ session }: { session: Session }) {
           />
         </div>
 
-        <div className="relative w-fit mx-auto mt-32">
-          <h1 className="text-slate-700 font-bold text-2xl">
+        <div className="w-fit mx-auto mt-32">
+          <h1 className="inline text-slate-700 font-bold text-2xl">
             {session.user?.name}
+            {" "}
           </h1>
-          <FiEdit3 className="absolute -right-5 top-0" />
+          <FiEdit3 className="inline mb-4" />
         </div>
-        <h1 className="mt-3 text-slate-500 text-sm">{session.user?.email}</h1>
+        <p className="mt-2 text-slate-500 text-sm">{session.user?.email}</p>
 
         <div className="my-4 border-t border-slate-200 border-1 w-11/12 mx-auto" />
 
         <div className="px-2">
-          <h1 className="text-left font-bold text-slate-700 text-lg">
+          <h1 className="text-left indent-2 font-bold text-slate-700 text-lg">
             Shortned Links
           </h1>
           { /* @ts-ignore: Unsing an async component */ }
