@@ -1,4 +1,4 @@
-# Short URL App
+# Short URL App (My Bad attempt of building an UI app Lol 😀)
 
 This is a Short URL App built using Next.js. The app allows users to create short URLs for long web addresses, making it easier to share links.
 
